@@ -6,6 +6,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 import numpy as np
 from PIL import Image
 from ISR.models import RDN, RRDN
+import tensorflow as tf
 
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/uploads/'
 DOWNLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/downloads/'
@@ -51,14 +52,15 @@ def process_file(path, filename):
 def image_deblur(path, filename):
 	img = Image.open(path)
 	model = RRDN(weights='gans')
+	# model = RDN(weights='psnr-small')
+	# model = RDN(weights='psnr-large')
+	# model = RDN(weights='noise-cancel')
 	img.resize(size=(img.size[0]*4, img.size[1]*4), resample=Image.BICUBIC)
-	sr_img = model.predict(np.array(img))
+	sr_img = model.predict(np.array(img), by_patch_of_size=50)
 	new = Image.fromarray(sr_img)
 	#output_stream = open(app.config['DOWNLOAD_FOLDER'] + filename, 'wb')
-	#output.write(output_stream)
+	tf.keras.backend.clear_session()#output.write(output_stream)
 	new.save(DOWNLOAD_FOLDER+filename, 'JPEG')
-
-
 
 
 
