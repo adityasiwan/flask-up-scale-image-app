@@ -13,6 +13,7 @@ DOWNLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/downloads/'
 ALLOWED_EXTENSIONS = {'pdf', 'txt', 'JPEG', 'jpg', 'png'}
 
 app = Flask(__name__, static_url_path="/static")
+app.debug = True
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
@@ -56,7 +57,7 @@ def image_deblur(path, filename):
 	# model = RDN(weights='psnr-large')
 	# model = RDN(weights='noise-cancel')
 	img.resize(size=(img.size[0]*4, img.size[1]*4), resample=Image.BICUBIC)
-	sr_img = model.predict(np.array(img), by_patch_of_size=50)
+	sr_img = model.predict(np.array(img), by_patch_of_size=None, padding_size = 2)
 	new = Image.fromarray(sr_img)
 	#output_stream = open(app.config['DOWNLOAD_FOLDER'] + filename, 'wb')
 	tf.keras.backend.clear_session()#output.write(output_stream)
